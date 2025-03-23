@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Path
+from typing import Annotated
 
 app = FastAPI()
 
@@ -34,3 +35,22 @@ async def get_model(model_name: ModelName):
         return {"model_name": model_name, "message": "DeepSeek model"}
 
     return {"model_name": model_name, "message": "This is Llama"}
+
+
+# additional validations
+# path param is greater than 0 but should be less than 1000
+@app.get("/items/validations/{item_id}")
+async def read_items_w_validations(
+    item_id: Annotated[int, Path(title="The ID of the item to get", gt=0, le=1000)],
+    q: str,
+):
+    results = {"item_id": item_id}
+    if q:
+        results.update({"q": q})
+    return results
+
+
+# gt: greater than
+# ge: greater than or equal
+# lt: less than
+# le: less than or equal
